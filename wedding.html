@@ -181,13 +181,9 @@
     /* ── EL LUGAR ─────────────────────────── */
     #page-lugar { background: var(--ivory); }
     .lugar-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: start; margin-bottom: 0; }
-    .lugar-map-frame { position: sticky; top: 1.5rem; border: 1px solid rgba(143,181,163,.3); overflow: hidden; }
-    .lugar-map-frame iframe { display: block; width: 100%; height: 340px; border: none; }
-    .lugar-map-caption { padding: .75rem 1rem; background: var(--dark); display: flex; align-items: center; justify-content: space-between; }
-    .lugar-map-caption span { font-size: .56rem; letter-spacing: .18em; text-transform: uppercase; color: rgba(240,234,224,.55); }
-    .lugar-map-caption a { font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; color: var(--sage-lt); text-decoration: none; }
-    .lugar-map-caption a:hover { color: var(--cream); }
-    @media(max-width:700px){ .lugar-hero { grid-template-columns: 1fr; } .lugar-map-frame { display: none; } }
+    .lugar-illustration { position: sticky; top: 1.5rem; display: flex; align-items: center; justify-content: center; }
+    .lugar-illustration img { width: 100%; max-width: 480px; mix-blend-mode: screen; opacity: .88; display: block; }
+    @media(max-width:700px){ .lugar-hero { grid-template-columns: 1fr; } .lugar-illustration { display: none; } }
     .events-layout { display: grid; grid-template-columns: 1fr 2px 1fr; gap: 0 2.5rem; margin-top: 3rem; align-items: start; }
     .ev-divider { background: linear-gradient(to bottom, transparent, var(--sage), transparent); align-self: stretch; min-height: 200px; }
     .event-card { padding: 2rem 0; }
@@ -379,15 +375,8 @@
           </div>
         </div>
       </div>
-      <div class="lugar-map-frame reveal">
-        <iframe
-          src="https://maps.google.com/maps?q=Monasterio+de+San+Bartolom%C3%A9+de+Lupiana,+Lupiana,+Guadalajara&z=14&output=embed"
-          loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-        <div class="lugar-map-caption">
-          <span>Monasterio de San Bartolomé de Lupiana</span>
-          <a href="https://maps.google.com/?q=Monasterio+de+San+Bartolom%C3%A9+de+Lupiana" target="_blank" rel="noopener" data-t="map_open">↗ Ver en Maps</a>
-        </div>
+      <div class="lugar-illustration reveal">
+        <img src="iglesia.png" alt="Concatedral de Santa María de Guadalajara">
       </div>
     </div>
   </div>
