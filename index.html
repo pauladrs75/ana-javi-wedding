@@ -180,10 +180,11 @@
 
     /* ── EL LUGAR ─────────────────────────── */
     #page-lugar { background: var(--ivory); }
-    .lugar-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: start; margin-bottom: 0; }
-    .lugar-illustration { position: sticky; top: 1.5rem; display: flex; align-items: center; justify-content: center; }
-    .lugar-illustration img { width: 100%; max-width: 480px; mix-blend-mode: screen; opacity: .88; display: block; }
-    @media(max-width:700px){ .lugar-hero { grid-template-columns: 1fr; } .lugar-illustration { display: none; } }
+    #page-lugar { position: relative; }
+    .lugar-illustration { position: absolute; top: 0; right: 0; width: 48%; max-width: 500px; pointer-events: none; z-index: 0; }
+    .lugar-illustration img { width: 100%; opacity: .55; display: block; }
+    #page-lugar .section-wrap { position: relative; z-index: 1; }
+    @media(max-width:700px){ .lugar-illustration { width: 70%; opacity: .25; } }
     .events-layout { display: grid; grid-template-columns: 1fr 2px 1fr; gap: 0 2.5rem; margin-top: 3rem; align-items: start; }
     .ev-divider { background: linear-gradient(to bottom, transparent, var(--sage), transparent); align-self: stretch; min-height: 200px; }
     .event-card { padding: 2rem 0; }
@@ -351,32 +352,28 @@
 <!-- PAGE 2 · EL LUGAR                          -->
 <!-- ══════════════════════════════════════════ -->
 <div id="page-lugar" class="page">
+  <div class="lugar-illustration">
+    <img src="iglesia.png" alt="Concatedral de Santa María de Guadalajara">
+  </div>
   <div class="section-wrap">
-    <div class="lugar-hero">
-      <div>
-        <span class="sec-label" data-t="lugar_label">El Gran Día</span>
-        <span class="sec-heading-serif" data-t="lugar_heading_serif">The Day's</span>
-        <span class="sec-heading-script" data-t="lugar_heading_script">Events</span>
-        <div class="sec-rule left"></div>
-        <div class="events-layout">
-          <div class="event-card reveal">
-            <div class="ev-time">18:00</div>
-            <div class="ev-title" data-t="ev1_title">Ceremonia Religiosa</div>
-            <div class="ev-venue">Concatedral de Santa María de Guadalajara</div>
-          </div>
-          <div class="ev-divider"></div>
-          <div class="event-card reveal">
-            <div class="ev-time">19:30</div>
-            <div class="ev-title" data-t="ev2_title">Cóctel &amp; Cena</div>
-            <div class="ev-venue">Monasterio de San Bartolomé de Lupiana</div>
-          </div>
-          <div class="ev-note reveal" data-t="ev_note">
-            📍 Como ese día es festivo en Guadalajara, habrá más movimiento de lo habitual. ¡Ven con tiempo para aparcar con tranquilidad!
-          </div>
-        </div>
+    <span class="sec-label" data-t="lugar_label">El Gran Día</span>
+    <span class="sec-heading-serif" data-t="lugar_heading_serif">The Day's</span>
+    <span class="sec-heading-script" data-t="lugar_heading_script">Events</span>
+    <div class="sec-rule left"></div>
+    <div class="events-layout">
+      <div class="event-card reveal">
+        <div class="ev-time">18:00</div>
+        <div class="ev-title" data-t="ev1_title">Ceremonia Religiosa</div>
+        <div class="ev-venue">Concatedral de Santa María de Guadalajara</div>
       </div>
-      <div class="lugar-illustration reveal">
-        <img src="iglesia.png" alt="Concatedral de Santa María de Guadalajara">
+      <div class="ev-divider"></div>
+      <div class="event-card reveal">
+        <div class="ev-time">19:30</div>
+        <div class="ev-title" data-t="ev2_title">Cóctel &amp; Cena</div>
+        <div class="ev-venue">Monasterio de San Bartolomé de Lupiana</div>
+      </div>
+      <div class="ev-note reveal" data-t="ev_note">
+        📍 Como ese día es festivo en Guadalajara, habrá más movimiento de lo habitual. ¡Ven con tiempo para aparcar con tranquilidad!
       </div>
     </div>
   </div>
