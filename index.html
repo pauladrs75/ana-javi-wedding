@@ -143,17 +143,17 @@
     }
 
     /* photo strip – 2 real photos + 1 pair shot */
-    .photo-strip { display: flex; gap: 4px; height: min(58vh, 520px); background: var(--ivory); }
+    .photo-strip { display: flex; gap: 4px; height: min(90vh, 1000px); background: var(--ivory); }
     .ph {
       flex: 1; background-size: cover; background-position: center 25%;
       transition: flex .5s cubic-bezier(.4,0,.2,1);
       position: relative; overflow: hidden; cursor: pointer;
     }
-    .ph:hover { flex: 2.5; }
+    .ph:hover { flex: 1.7; }
     /* Fallback gradients – replaced by real photos via JS if files present */
     .ph-1 { background-color: #B5A898; background-image: url('photo1.jpg'), linear-gradient(160deg,#C8BFB2,#A89E92); background-position: center 15%; }
     .ph-2 { background-color: #9E9488; background-image: url('photo2.jpg'), linear-gradient(160deg,#B5A898,#8C8078); background-position: center 30%; }
-    .ph-3 { background-color: #8A8074; background-image: url('photo3.jpg'), linear-gradient(160deg,#9E9488,#7A7068); }
+    .ph-3 { background-color: #8A8074; background-image: url('photo3.jpg'), linear-gradient(160deg,#9E9488,#7A7068); background-position: center 35%; }
     .ph-cap {
       position: absolute; bottom: 0; left: 0; right: 0; padding: .55rem .7rem;
       font-size: .52rem; letter-spacing: .15em; text-transform: uppercase;
