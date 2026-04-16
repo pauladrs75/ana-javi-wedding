@@ -271,6 +271,8 @@
     /* ── RESPONSIVE ───────────────────────── */
     @media (max-width: 700px) {
       nav { padding: 0 1rem; }
+      .photo-strip { height: auto; flex-direction: column; }
+      .ph { flex: none; width: 100%; aspect-ratio: 4/3; }
       .nav-links { gap: .8rem; }
       .nav-links button { font-size: .55rem; letter-spacing: .1em; }
       .events-layout { grid-template-columns: 1fr; }
@@ -282,6 +284,13 @@
       .frm-row { grid-template-columns: 1fr; }
       .cd-item { padding: 0 1rem; }
     }
+    /* ── PARKING & RECOMENDACIONES ──────────── */
+    .info-section { margin-top: 3rem; }
+    .parking-list { list-style: none; padding: 0; margin: 1.2rem 0 0; }
+    .parking-list li { padding: .5rem 0; font-size: .92rem; color: var(--charcoal); border-bottom: 1px solid rgba(143,181,163,.18); display: flex; align-items: center; gap: .6rem; }
+    .parking-list li::before { content: '🅿'; font-size: .85rem; }
+    .recom-body { font-size: .92rem; line-height: 1.85; color: var(--charcoal); margin-top: 1rem; }
+    .recom-body p { margin-bottom: 1rem; }
   </style>
 </head>
 <body>
@@ -290,11 +299,11 @@
 <nav>
   <div class="nav-links">
     <button onclick="goTo('home')"  class="active" data-page="home"  data-t="nav_home">Home</button>
-    <button onclick="goTo('lugar')" data-page="lugar" data-t="nav_lugar">El Lugar</button>
+    <button onclick="goTo('lugar')" data-page="lugar" data-t="nav_lugar">Programa</button>
   </div>
   <button class="monogram" onclick="goTo('home')">A&amp;J</button>
   <div class="nav-links">
-    <button onclick="goTo('viaje')" data-page="viaje" data-t="nav_viaje">El Viaje</button>
+    <button onclick="goTo('viaje')" data-page="viaje" data-t="nav_viaje">Más Información</button>
     <button onclick="goTo('lista')" data-page="lista" data-t="nav_lista">Lista de Bodas</button>
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('es')">ES</button>
@@ -322,7 +331,7 @@
       <p class="hero-eyebrow" data-t="hero_eyebrow">18 · Septiembre · 2026 · Guadalajara</p>
       <h1 class="hero-names">ANA <span class="amp">&amp;</span> JAVI</h1>
       <span class="hero-script" data-t="hero_script">se casan!</span>
-      <button class="hero-cta" onclick="goTo('rsvp')" data-t="hero_cta">RSVP Aquí</button>
+      <a class="hero-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSfMU8MAZOBFCqpIViBJ90Ekhk7p-mDSLyz4HVJUnev28mNkjA/viewform" target="_blank" rel="noopener" data-t="hero_cta">SRC</a>
     </div>
     <div class="hero-meta">
       <span data-t="hero_date">18 de Septiembre 2026</span>
@@ -331,9 +340,9 @@
   </div>
 
   <div class="photo-strip">
-    <div class="ph ph-1"><span class="ph-cap" data-t="photo_cap1">Ana &amp; Javi</span></div>
-    <div class="ph ph-2"><span class="ph-cap" data-t="photo_cap2">Juntos</span></div>
-    <div class="ph ph-3"><span class="ph-cap" data-t="photo_cap3">El gran día</span></div>
+    <div class="ph ph-1"></div>
+    <div class="ph ph-2"></div>
+    <div class="ph ph-3"></div>
   </div>
 
   <div class="countdown-band">
@@ -364,7 +373,7 @@
       <div class="event-card reveal">
         <div class="ev-time">18:00</div>
         <div class="ev-title" data-t="ev1_title">Ceremonia Religiosa</div>
-        <div class="ev-venue">Concatedral de Santa María de Guadalajara</div>
+        <div class="ev-venue">Concatedral de Santa Maria la Mayor de Guadalajara</div>
       </div>
       <div class="ev-divider"></div>
       <div class="event-card reveal">
@@ -393,7 +402,7 @@
       <div class="viaje-card active reveal" id="card-car" onclick="switchMap('car')">
         <div class="vc-icon">🚗</div>
         <div class="vc-label" data-t="car_label">En Coche</div>
-        <div class="vc-title" data-t="car_title">Por la A-1</div>
+        <div class="vc-title" data-t="car_title">Por la A-2</div>
         <div class="vc-body" data-t="car_body">Un trayecto cómodo y directo desde Madrid. La A-1 te lleva directo a Guadalajara sin complicaciones.</div>
         <span class="vc-badge">35–50 min</span>
       </div>
@@ -428,9 +437,40 @@
       <div class="dormir-icon-wrap">🏨</div>
       <div>
         <div class="dormir-label" data-t="hotel_label">Hotel Recomendado</div>
-        <div class="dormir-title"><a href="https://www.marriott.com/en-us/hotels/madgu-ac-hotel-guadalajara-spain/overview/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(143,181,163,.5);">AC Hotels Guadalajara</a></div>
+        <div class="dormir-title"><a href="https://www.marriott.com/en-us/hotels/madgu-ac-hotel-guadalajara-spain/overview/?cid=NAT_google_hotel_url" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(143,181,163,.5);">AC Hotels Guadalajara</a></div>
         <div class="dormir-body" data-t="hotel_body">Si deseas quedarte a dormir en Guadalajara, este es nuestro hotel recomendado. Es el que está más cerca de la iglesia andando, cuenta con parking y además está junto a la estación de autobuses para quienes prefieran venir en bus.</div>
       </div>
+    </div>
+    <div class="dormir-card reveal">
+      <div class="dormir-icon-wrap">🏨</div>
+      <div>
+        <div class="dormir-label" data-t="hotel2_label">Hotel Recomendado</div>
+        <div class="dormir-title"><a href="https://www.melia.com/es/hoteles/espana/guadalajara/hotel-guadalajara-conference-center-by-melia?utm_campaign=google&utm_content=1903&utm_medium=organic&utm_source=directories#hotel-accommodation-rooms" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(143,181,163,.5);">Hotel Meliá Guadalajara</a></div>
+        <div class="dormir-body" data-t="hotel2_body">Si deseas quedarte a dormir en Guadalajara, otra muy buena opción es el Hotel Meliá. Cuenta con parking y está especialmente bien comunicado para quienes vengan en coche, ya que tiene muy buena llegada desde el Monasterio de Lupiana y una salida muy cómoda a la A-2 para regresar a Madrid.</div>
+      </div>
+    </div>
+
+    <!-- Dónde aparcar -->
+    <div class="info-section reveal">
+      <span class="sec-label" data-t="parking_label">Dónde</span>
+      <span class="sec-heading-serif" data-t="parking_heading">Aparcar</span>
+      <div class="sec-rule left"></div>
+      <p class="recom-body" data-t="parking_intro">Os recomendamos estos parkings cercanos para que la llegada sea más cómoda:</p>
+      <ul class="parking-list">
+        <li data-t="parking_1">Aparcamiento de Santa María (al lado de la iglesia)</li>
+        <li data-t="parking_2">Parking Santo Domingo</li>
+        <li data-t="parking_3">Parking Dávalos</li>
+        <li data-t="parking_4">Parking El Carmen</li>
+      </ul>
+      <p class="recom-body" style="margin-top:1rem;" data-t="parking_note">Para quienes prefiráis aparcar cerca de la iglesia, os recomendamos llegar con tiempo, ya que al ser festivo en Guadalajara puede resultar más complicado encontrar aparcamiento en la zona.</p>
+    </div>
+
+    <!-- Recomendaciones -->
+    <div class="info-section reveal">
+      <span class="sec-label" data-t="recom_label">Extras</span>
+      <span class="sec-heading-serif" data-t="recom_heading">Recomendaciones</span>
+      <div class="sec-rule left"></div>
+      <div class="recom-body" data-t="recom_body"><p>Esa semana es festivo en Guadalajara, así que, si después de la boda todavía os quedan ganas, os animamos a disfrutar también del ambiente del día siguiente: habrá comidas populares, verbenas y corrida de toros la tarde del sábado. Y para los más valientes, a las 8:00 de la mañana, después de la boda, encierro por las calles de Guadalajara, declarado fiesta de Interés Turístico Regional.</p><p>Si por el contrario os apetece aprovechar para hacer un poco de turismo, os recomendamos acercaros a Brihuega y Torija, dos pueblos con mucho encanto situados muy cerca de Guadalajara.</p></div>
     </div>
   </div>
   <div class="page-footer"><div class="footer-monogram">A &amp; J</div><p>18 · Septiembre · 2026 · Guadalajara</p></div>
@@ -447,13 +487,12 @@
       <div class="photo-ph"></div>
       <div class="photo-ph"></div>
     </div>
-    <h2 class="lista-headline" data-t="lista_headline">Lo más importante<br>es tu <span class="highlight">presencia</span></h2>
-    <p class="lista-body" data-t="lista_body">Si además deseas hacernos un regalo, agradeceremos cualquier aportación que nos ayude a comenzar esta nueva etapa juntos.</p>
+    <h2 class="lista-headline" data-t="lista_headline">Lo más importante para nosotros es poder compartir con vosotros uno de los días más especiales de nuestra vida.</h2>
+    <p class="lista-body" data-t="lista_body">Vuestra presencia es, sin duda, el mejor regalo.<br><br>Si además queréis hacernos un detalle, os agradeceremos muchísimo cualquier aportación que nos ayude a comenzar esta nueva etapa juntos.<br><br>Gracias de corazón.</p>
     <div class="iban-box reveal">
       <div class="iban-label" data-t="iban_label">Número de cuenta</div>
       <div class="iban-num">ES21 0128 8700 1801 0021 5247</div>
     </div>
-    <button class="hero-cta" onclick="goTo('rsvp')" data-t="hero_cta">RSVP Aquí</button>
   </div>
   <div class="page-footer"><div class="footer-monogram">A &amp; J</div><p>18 · Septiembre · 2026 · Guadalajara</p></div>
 </div>
@@ -536,16 +575,16 @@
 // ── TRANSLATIONS ─────────────────────────────────
 const T = {
   es: {
-    nav_home:'Home', nav_lugar:'El Lugar', nav_viaje:'El Viaje', nav_lista:'Lista de Bodas',
+    nav_home:'Inicio', nav_lugar:'Programa', nav_viaje:'Más Información', nav_lista:'Lista de Bodas',
     hero_eyebrow:'18 · Septiembre · 2026 · Guadalajara',
-    hero_script:'se casan!', hero_cta:'RSVP Aquí', hero_date:'18 de Septiembre 2026',
+    hero_script:'se casan!', hero_cta:'SRC', hero_date:'18 de Septiembre 2026',
     photo_cap1:'Ana & Javi', photo_cap2:'Juntos', photo_cap3:'El gran día',
     countdown_label:'Faltan…', cd_days:'Días', cd_hours:'Horas', cd_mins:'Minutos', cd_secs:'Segundos',
     lugar_label:'El Gran Día', lugar_heading_serif:"The Day's", lugar_heading_script:'Events',
     ev1_title:'Ceremonia Religiosa', ev2_title:'Cóctel & Cena',
     ev_note:'📍 Como ese día es festivo en Guadalajara, habrá más movimiento de lo habitual. ¡Ven con tiempo para aparcar con tranquilidad!',
     viaje_label:'Cómo Llegar', viaje_heading:'Desde Madrid',
-    car_label:'En Coche', car_title:'Por la A-1', car_body:'Un trayecto cómodo y directo desde Madrid. La A-1 te lleva directo a Guadalajara sin complicaciones.',
+    car_label:'En Coche', car_title:'Por la A-2', car_body:'Un trayecto cómodo y directo desde Madrid. La A-2 te lleva directo a Guadalajara sin complicaciones.',
     bus_label:'En Autobús', bus_title:'ALSA desde Madrid', bus_body:'Sale desde el Intercambiador de Autobuses de Avenida de América. Cómodo y frecuente durante el día.',
     map_open:'↗ Abrir en Google Maps',
     map_car_label:'Av. de América → Concatedral · En coche',
@@ -553,8 +592,8 @@ const T = {
     dormir_label:'Dónde', dormir_heading:'Dormir',
     hotel_label:'Hotel Recomendado', hotel_body:'Si deseas quedarte a dormir en Guadalajara, este es nuestro hotel recomendado. Es el que está más cerca de la iglesia andando, cuenta con parking y además está junto a la estación de autobuses para quienes prefieran venir en bus.',
     lista_label:'Lista de Bodas',
-    lista_headline:'Lo más importante<br>es tu <span class="highlight">presencia</span>',
-    lista_body:'Si además deseas hacernos un regalo, agradeceremos cualquier aportación que nos ayude a comenzar esta nueva etapa juntos.',
+    lista_headline:'Lo más importante para nosotros es poder compartir con vosotros uno de los días más especiales de nuestra vida.',
+    lista_body:'Vuestra presencia es, sin duda, el mejor regalo.<br><br>Si además queréis hacernos un detalle, os agradeceremos muchísimo cualquier aportación que nos ayude a comenzar esta nueva etapa juntos.<br><br>Gracias de corazón.',
     iban_label:'Número de cuenta',
     rsvp_label:'Confirmación', rsvp_script:'¡Cuéntanos si venís!',
     f_nombre:'Nombre', f_nombre_ph:'Ana', f_apellido:'Apellido', f_apellido_ph:'García',
@@ -565,19 +604,28 @@ const T = {
     f_mensaje:'Mensaje (opcional)', f_mensaje_ph:'Un deseo, un recuerdo, una petición musical…',
     f_submit:'Enviar confirmación',
     success_title:'¡Gracias!', success_body:'Hemos recibido tu confirmación. ¡Nos vemos el 18 de septiembre!',
+    parking_label:'Dónde', parking_heading:'Aparcar',
+    parking_intro:'Os recomendamos estos parkings cercanos para que la llegada sea más cómoda:',
+    parking_1:'Aparcamiento de Santa María (al lado de la iglesia)',
+    parking_2:'Parking Santo Domingo', parking_3:'Parking Dávalos', parking_4:'Parking El Carmen',
+    parking_note:'Para quienes prefiráis aparcar cerca de la iglesia, os recomendamos llegar con tiempo, ya que al ser festivo en Guadalajara puede resultar más complicado encontrar aparcamiento en la zona.',
+    recom_label:'Extras', recom_heading:'Recomendaciones',
+    recom_body:'<p>Esa semana es festivo en Guadalajara, así que, si después de la boda todavía os quedan ganas, os animamos a disfrutar también del ambiente del día siguiente: habrá comidas populares, verbenas y corrida de toros la tarde del sábado. Y para los más valientes, a las 8:00 de la mañana, después de la boda, encierro por las calles de Guadalajara, declarado fiesta de Interés Turístico Regional.</p><p>Si por el contrario os apetece aprovechar para hacer un poco de turismo, os recomendamos acercaros a Brihuega y Torija, dos pueblos con mucho encanto situados muy cerca de Guadalajara.</p>',
+    hotel2_label:'Hotel Recomendado',
+    hotel2_body:'Si deseas quedarte a dormir en Guadalajara, otra muy buena opción es el Hotel Meliá. Cuenta con parking y está especialmente bien comunicado para quienes vengan en coche, ya que tiene muy buena llegada desde el Monasterio de Lupiana y una salida muy cómoda a la A-2 para regresar a Madrid.',
     footer_love:'Hecho con mucho amor ♥'
   },
   en: {
-    nav_home:'Home', nav_lugar:'The Venue', nav_viaje:'Getting There', nav_lista:'Gift List',
+    nav_home:'Home', nav_lugar:'Programme', nav_viaje:'More Info', nav_lista:'Gift List',
     hero_eyebrow:'18 · September · 2026 · Guadalajara',
-    hero_script:"are getting married!", hero_cta:'RSVP Here', hero_date:'18 September 2026',
+    hero_script:"are getting married!", hero_cta:'SRC', hero_date:'18 September 2026',
     photo_cap1:'Ana & Javi', photo_cap2:'Together', photo_cap3:'The big day',
     countdown_label:'Counting down…', cd_days:'Days', cd_hours:'Hours', cd_mins:'Minutes', cd_secs:'Seconds',
     lugar_label:'The Big Day', lugar_heading_serif:"The Day's", lugar_heading_script:'Events',
     ev1_title:'Religious Ceremony', ev2_title:'Cocktail & Dinner',
     ev_note:'📍 This day is a public holiday in Guadalajara, so there will be more traffic than usual. Give yourself extra time to find parking!',
     viaje_label:'Getting Here', viaje_heading:'From Madrid',
-    car_label:'By Car', car_title:'Via the A-1', car_body:'A comfortable, straightforward drive from Madrid. The A-1 motorway takes you directly to Guadalajara.',
+    car_label:'By Car', car_title:'Via the A-2', car_body:'A comfortable, straightforward drive from Madrid. The A-2 motorway takes you directly to Guadalajara.',
     bus_label:'By Bus', bus_title:'ALSA from Madrid', bus_body:'Departs from the Avenida de América bus interchange. Comfortable and frequent throughout the day.',
     map_open:'↗ Open in Google Maps',
     map_car_label:'Av. de América → Cathedral · By car',
@@ -585,8 +633,8 @@ const T = {
     dormir_label:'Where to', dormir_heading:'Stay',
     hotel_label:'Recommended Hotel', hotel_body:"If you'd like to stay overnight in Guadalajara, this is our top pick. It's the closest hotel to the church on foot, has parking, and is right next to the bus station.",
     lista_label:'Gift List',
-    lista_headline:'The most important thing<br>is your <span class="highlight">presence</span>',
-    lista_body:'If you would also like to give a gift, any contribution towards our new life together would be gratefully received.',
+    lista_headline:'The most important thing for us is to be able to share one of the most special days of our lives with you.',
+    lista_body:'Your presence is, without a doubt, the best gift.<br><br>If you would also like to give us a little something, we would be truly grateful for any contribution that helps us begin this new chapter together.<br><br>Thank you from the bottom of our hearts.',
     iban_label:'Bank account number',
     rsvp_label:'Confirmation', rsvp_script:'Let us know if you can make it!',
     f_nombre:'First name', f_nombre_ph:'Ana', f_apellido:'Last name', f_apellido_ph:'García',
@@ -597,6 +645,15 @@ const T = {
     f_mensaje:'Message (optional)', f_mensaje_ph:'A wish, a memory, a song request…',
     f_submit:'Send RSVP',
     success_title:'Thank you!', success_body:'We have received your RSVP. See you on 18 September!',
+    parking_label:'Where to', parking_heading:'Park',
+    parking_intro:'We recommend the following nearby parking options for a smoother arrival:',
+    parking_1:'Aparcamiento de Santa María (next to the church)',
+    parking_2:'Parking Santo Domingo', parking_3:'Parking Dávalos', parking_4:'Parking El Carmen',
+    parking_note:'If you prefer to park near the church, we recommend arriving with extra time, as it can be harder to find a spot in the area on a public holiday.',
+    recom_label:'Extras', recom_heading:'Recommendations',
+    recom_body:"<p>That week is a public holiday in Guadalajara, so if you still have energy after the wedding, we encourage you to enjoy the atmosphere the following day: there will be traditional communal meals, local festivities, and a bullfight on Saturday afternoon. And for the more adventurous, at 8:00 a.m. the morning after the wedding, there will be a traditional running of the bulls through the streets of Guadalajara, declared a Festival of Regional Tourist Interest.</p><p>Alternatively, if you'd prefer to do a bit of sightseeing, we recommend visiting Brihuega and Torija, two charming villages located very close to Guadalajara.</p>",
+    hotel2_label:'Recommended Hotel',
+    hotel2_body:"If you'd like to stay overnight in Guadalajara, another great option is the Hotel Meliá. It has parking and is especially convenient for those coming by car, as it's easily accessible from the Monastery of Lupiana and offers a very straightforward exit to the A-2 for returning to Madrid.",
     footer_love:'Made with love ♥'
   }
 };
