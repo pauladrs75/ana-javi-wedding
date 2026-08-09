@@ -196,7 +196,7 @@
     /* ── EL VIAJE ─────────────────────────── */
     #page-viaje { background: var(--cream); }
     #page-viaje .section-wrap { max-width: 860px; }
-    .viaje-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+    .viaje-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
     .viaje-card { background: rgba(237,229,216,.85); border: 1px solid rgba(143,181,163,.25); padding: 1.8rem; transition: transform .3s,box-shadow .3s,border-color .3s,background .3s; cursor: pointer; }
     .viaje-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(30,26,22,.07); border-color: var(--sage); }
     .viaje-card.active { background: rgba(143,181,163,.15); border-color: var(--sage-dk); transform: translateY(-3px); }
@@ -384,10 +384,17 @@
       </div>
       <div class="viaje-card reveal" id="card-bus" onclick="switchMap('bus')">
         <div class="vc-icon">🚌</div>
-        <div class="vc-label" data-t="bus_label">SERVICIO DE AUTOBÚS</div>
-        <div class="vc-title" data-t="bus_title">Autobús desde Madrid</div>
-        <div class="vc-body" data-t="bus_body">Saldrá a las 16:30 h desde Avenida de América, 2 (justo delante del VIPS). Los autobuses de regreso saldrán a las 04:00 h.</div>
-        <span class="vc-badge" data-t="bus_badge">IDA 16:30H · VUELTA 04:00H</span>
+        <div class="vc-label" data-t="bus_label">En Transporte Publico</div>
+        <div class="vc-title" data-t="bus_title">ALSA desde Madrid</div>
+        <div class="vc-body" data-t="bus_body">Sale desde el Intercambiador de Autobuses de Avenida de América. Cómodo y frecuente durante el día.</div>
+        <span class="vc-badge">~55 min</span>
+      </div>
+      <div class="viaje-card reveal" id="card-wedbus" onclick="switchMap('wedbus')">
+        <div class="vc-icon">🚌</div>
+        <div class="vc-label" data-t="wedbus_label">SERVICIO DE AUTOBÚS</div>
+        <div class="vc-title" data-t="wedbus_title">Autobús desde Madrid</div>
+        <div class="vc-body" data-t="wedbus_body">Saldrá a las 16:30 h desde Avenida de América, 2 (justo delante del VIPS). Los autobuses de regreso saldrán a las 04:00 h.</div>
+        <span class="vc-badge" data-t="wedbus_badge">IDA 16:30H · VUELTA 04:00H</span>
       </div>
     </div>
 
@@ -401,6 +408,7 @@
       <div class="map-iframe-wrap">
         <iframe id="map-car" src="https://maps.google.com/maps?saddr=40.4381048,-3.6766079&daddr=40.6345672,-3.1627004&dirflg=d&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
         <iframe id="map-bus" src="https://maps.google.com/maps?saddr=40.4381048,-3.6766079&daddr=40.6345672,-3.1627004&dirflg=r&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" class="hidden"></iframe>
+        <iframe id="map-wedbus" src="https://maps.google.com/maps?saddr=40.4381048,-3.6766079&daddr=40.6345672,-3.1627004&dirflg=d&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" class="hidden"></iframe>
       </div>
     </div>
 
@@ -488,10 +496,12 @@ const T = {
     ev_note:'📍 Como ese día es festivo en Guadalajara, habrá más movimiento de lo habitual. ¡Ven con tiempo para aparcar con tranquilidad!',
     viaje_label:'Cómo Llegar', viaje_heading:'Desde Madrid',
     car_label:'En Coche', car_title:'Por la A-2', car_body:'Un trayecto cómodo y directo desde Madrid. La A-2 te lleva directo a Guadalajara sin complicaciones.',
-    bus_label:'SERVICIO DE AUTOBÚS', bus_title:'Autobús desde Madrid', bus_body:'Saldrá a las 16:30 h desde Avenida de América, 2 (justo delante del VIPS). Los autobuses de regreso saldrán a las 04:00 h.', bus_badge:'IDA 16:30H · VUELTA 04:00H',
+    bus_label:'En Transporte Publico', bus_title:'ALSA desde Madrid', bus_body:'Sale desde el Intercambiador de Autobuses de Avenida de América. Cómodo y frecuente durante el día.',
+    wedbus_label:'SERVICIO DE AUTOBÚS', wedbus_title:'Autobús desde Madrid', wedbus_body:'Saldrá a las 16:30 h desde Avenida de América, 2 (justo delante del VIPS). Los autobuses de regreso saldrán a las 04:00 h.', wedbus_badge:'IDA 16:30H · VUELTA 04:00H',
     map_open:'↗ Abrir en Google Maps',
     map_car_label:'Av. de América → Concatedral · En coche',
     map_bus_label:'Av. de América → Concatedral · En transporte publico',
+    map_wedbus_label:'Av. de América, 2 → Concatedral · Wedding bus',
     dormir_label:'Dónde', dormir_heading:'Dormir',
     hotel_label:'Hotel Recomendado', hotel_body:'Si deseas quedarte a dormir en Guadalajara, este es nuestro hotel recomendado. Es el que está más cerca de la iglesia andando, cuenta con parking y además está junto a la estación de autobuses para quienes prefieran venir en bus.',
     lista_label:'Lista de Bodas',
@@ -529,10 +539,12 @@ const T = {
     ev_note:'📍 This day is a public holiday in Guadalajara, so there will be more traffic than usual. Give yourself extra time to find parking!',
     viaje_label:'Getting Here', viaje_heading:'From Madrid',
     car_label:'By Car', car_title:'Via the A-2', car_body:'A comfortable, straightforward drive from Madrid. The A-2 motorway takes you directly to Guadalajara.',
-    bus_label:'WEDDING BUS', bus_title:'Departure from Madrid', bus_body:'Departs at 16:30 from Avenida de América, 2 (in front of VIPS). Return buses back to Madrid leave at 04:00.', bus_badge:'DEPARTURE 16:30H',
+    bus_label:'By Public Transport', bus_title:'ALSA from Madrid', bus_body:'Departs from the Avenida de América bus interchange. Comfortable and frequent throughout the day.',
+    wedbus_label:'WEDDING BUS', wedbus_title:'Departure from Madrid', wedbus_body:'Departs at 16:30 from Avenida de América, 2 (in front of VIPS). Return buses back to Madrid leave at 04:00.', wedbus_badge:'DEPARTURE 16:30H',
     map_open:'↗ Open in Google Maps',
     map_car_label:'Av. de América → Cathedral · By car',
     map_bus_label:'Av. de América → Cathedral · By Public Transport',
+    map_wedbus_label:'Av. de América, 2 → Cathedral · Wedding bus',
     dormir_label:'Where to', dormir_heading:'Stay',
     hotel_label:'Recommended Hotel', hotel_body:"If you'd like to stay overnight in Guadalajara, this is our top pick. It's the closest hotel to the church on foot, has parking, and is right next to the bus station.",
     lista_label:'Gift List',
@@ -579,7 +591,9 @@ function setLang(l) {
     if (T[l][key] !== undefined) el.placeholder = T[l][key];
   });
   // update map route label
-  const mode = document.getElementById('card-car').classList.contains('active') ? 'car' : 'bus';
+  let mode = 'car';
+  if (document.getElementById('card-bus').classList.contains('active')) mode = 'bus';
+  if (document.getElementById('card-wedbus').classList.contains('active')) mode = 'wedbus';
   document.getElementById('map-route-text').textContent = T[l]['map_' + mode + '_label'];
 }
 
@@ -621,13 +635,16 @@ tick(); setInterval(tick,1000);
 // ── MAP SWITCHER ───────────────────────────────────
 const mapLinks = {
   car: 'https://www.google.com/maps/dir/Avenida+de+Am%C3%A9rica,+Chamart%C3%ADn,+28002+Madrid/Concatedral+de+Santa+Mar%C3%ADa+de+Guadalajara,+Pl.+Sta.+Mar%C3%ADa,+5,+19005+Guadalajara/@40.5360264,-3.5786296,11z/data=!4m14!4m13!1m5!1m1!1s0xd4228c6b8e3c001:0x95b2689bc559ecd0!2m2!1d-3.6766079!2d40.4381048!1m5!1m1!1s0xd43ab9e7efd8a41:0x22dadc0270c71a92!2m2!1d-3.1627004!2d40.6345672!3e0!5m1!1e4',
-  bus: 'https://www.google.com/maps/dir/Avenida+de+Am%C3%A9rica,+Chamart%C3%ADn,+28002+Madrid,+Spain/Santa+Maria,+Pl.+Sta.+Mar%C3%ADa,+5,+19005+Guadalajara,+Spain/@40.5368418,-3.584927,53848m/data=!3m1!1e3!4m18!4m17!1m5!1m1!1s0xd4228c6b8e3c001:0x95b2689bc559ecd0!2m2!1d-3.6766079!2d40.4381048!1m5!1m1!1s0xd43ab9e7efd8a41:0x22dadc0270c71a92!2m2!1d-3.1627004!2d40.6345672!2m3!6e0!7e2!8j1774706400!3e3!5m1!1e4?entry=ttu&g_ep=EgoyMDI2MDMyNC4wIKXMDSoASAFQAw%3D%3D'
+  bus: 'https://www.google.com/maps/dir/Avenida+de+Am%C3%A9rica,+Chamart%C3%ADn,+28002+Madrid,+Spain/Santa+Maria,+Pl.+Sta.+Mar%C3%ADa,+5,+19005+Guadalajara,+Spain/@40.5368418,-3.584927,53848m/data=!3m1!1e3!4m18!4m17!1m5!1m1!1s0xd4228c6b8e3c001:0x95b2689bc559ecd0!2m2!1d-3.6766079!2d40.4381048!1m5!1m1!1s0xd43ab9e7efd8a41:0x22dadc0270c71a92!2m2!1d-3.1627004!2d40.6345672!2m3!6e0!7e2!8j1774706400!3e3!5m1!1e4?entry=ttu&g_ep=EgoyMDI2MDMyNC4wIKXMDSoASAFQAw%3D%3D',
+  wedbus: 'https://www.google.com/maps/dir/Avenida+de+Am%C3%A9rica,+2,+28002+Madrid/Concatedral+de+Santa+Mar%C3%ADa+de+Guadalajara,+Pl.+Sta.+Mar%C3%ADa,+5,+19005+Guadalajara/@40.5360264,-3.5786296,11z/data=!4m14!4m13!1m5!1m1!1s0xd4228c6b8e3c001:0x95b2689bc559ecd0!2m2!1d-3.6766079!2d40.4381048!1m5!1m1!1s0xd43ab9e7efd8a41:0x22dadc0270c71a92!2m2!1d-3.1627004!2d40.6345672!3e0!5m1!1e4'
 };
 function switchMap(mode) {
   document.getElementById('card-car').classList.toggle('active', mode==='car');
   document.getElementById('card-bus').classList.toggle('active', mode==='bus');
+  document.getElementById('card-wedbus').classList.toggle('active', mode==='wedbus');
   document.getElementById('map-car').classList.toggle('hidden', mode!=='car');
   document.getElementById('map-bus').classList.toggle('hidden', mode!=='bus');
+  document.getElementById('map-wedbus').classList.toggle('hidden', mode!=='wedbus');
   document.getElementById('map-route-text').textContent = T[lang]['map_'+mode+'_label'];
   document.getElementById('map-open-link').href = mapLinks[mode];
 }
