@@ -268,6 +268,12 @@
     .parking-list li::before { content: '🅿'; font-size: .85rem; }
     .recom-body { font-size: .92rem; line-height: 1.85; color: var(--charcoal); margin-top: 1rem; }
     .recom-body p { margin-bottom: 1rem; }
+    .taxi-list { list-style: none; padding: 0; margin: 1.2rem 0 0; }
+    .taxi-list li { padding: .6rem 0; font-size: .92rem; color: var(--charcoal); border-bottom: 1px solid rgba(143,181,163,.18); display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem; }
+    .taxi-list li::before { content: '🚕'; font-size: .85rem; }
+    .taxi-name { font-weight: 600; color: var(--dark); }
+    .taxi-phone { color: var(--sage-dk); text-decoration: none; border-bottom: 1px solid rgba(143,181,163,.4); }
+    .taxi-phone:hover { color: var(--dark); }
   </style>
 </head>
 <body>
@@ -449,6 +455,20 @@
       <p class="recom-body" style="margin-top:1rem;" data-t="parking_note">Para quienes prefiráis aparcar cerca de la iglesia, os recomendamos llegar con tiempo, ya que al ser festivo en Guadalajara puede resultar más complicado encontrar aparcamiento en la zona.</p>
     </div>
 
+    <!-- Taxis -->
+    <div class="info-section reveal">
+      <span class="sec-label" data-t="taxi_label">Por Si Acaso</span>
+      <span class="sec-heading-serif" data-t="taxi_heading">Taxis</span>
+      <div class="sec-rule left"></div>
+      <p class="recom-body" data-t="taxi_intro">Por si alguien lo necesita, os dejamos algunos contactos de taxis:</p>
+      <ul class="taxi-list">
+        <li><span class="taxi-name" data-t="taxi_1_name">Miguel — Taxista 24 h (5 y 7 plazas)</span><a class="taxi-phone" href="tel:+34680615152">680 615 152</a></li>
+        <li><span class="taxi-name" data-t="taxi_2_name">Ramón (18:00 – 01:00 h)</span><a class="taxi-phone" href="tel:+34610130761">610 130 761</a></li>
+        <li><span class="taxi-name" data-t="taxi_3_name">Mercedes — VTC Horche</span><a class="taxi-phone" href="tel:+34626885005">626 885 005</a></li>
+        <li><span class="taxi-name" data-t="taxi_4_name">Radio Taxi Guadalajara</span><a class="taxi-phone" href="tel:+34949870127">949 870 127</a> · <a class="taxi-phone" href="tel:+34949229869">949 229 869</a> · <a class="taxi-phone" href="tel:+34949212245">949 212 245</a></li>
+      </ul>
+    </div>
+
     <!-- Recomendaciones -->
     <div class="info-section reveal">
       <span class="sec-label" data-t="recom_label">Extras</span>
@@ -522,6 +542,12 @@ const T = {
     parking_1:'Aparcamiento de Santa María (al lado de la iglesia)',
     parking_2:'Parking Santo Domingo', parking_3:'Parking Dávalos', parking_4:'Parking El Carmen',
     parking_note:'Para quienes prefiráis aparcar cerca de la iglesia, os recomendamos llegar con tiempo, ya que al ser festivo en Guadalajara puede resultar más complicado encontrar aparcamiento en la zona.',
+    taxi_label:'Por Si Acaso', taxi_heading:'Taxis',
+    taxi_intro:'Por si alguien lo necesita, os dejamos algunos contactos de taxis:',
+    taxi_1_name:'Miguel — Taxista 24 h (5 y 7 plazas)',
+    taxi_2_name:'Ramón (18:00 – 01:00 h)',
+    taxi_3_name:'Mercedes — VTC Horche',
+    taxi_4_name:'Radio Taxi Guadalajara',
     recom_label:'Extras', recom_heading:'Recomendaciones',
     recom_body:'<p>Esa semana es festivo en Guadalajara, así que, si después de la boda todavía os quedan ganas, os animamos a disfrutar también del ambiente del día siguiente: habrá comidas populares, verbenas y corrida de toros la tarde del sábado. Y para los más valientes, a las 8:00 de la mañana, después de la boda, encierro por las calles de Guadalajara, declarado fiesta de Interés Turístico Regional.</p><p>Si por el contrario os apetece aprovechar para hacer un poco de turismo, os recomendamos acercaros a Brihuega y Torija, dos pueblos con mucho encanto situados muy cerca de Guadalajara.</p>',
     hotel2_label:'Hotel Recomendado',
@@ -565,6 +591,12 @@ const T = {
     parking_1:'Aparcamiento de Santa María (next to the church)',
     parking_2:'Parking Santo Domingo', parking_3:'Parking Dávalos', parking_4:'Parking El Carmen',
     parking_note:'If you prefer to park near the church, we recommend arriving with extra time, as it can be harder to find a spot in the area on a public holiday.',
+    taxi_label:'Just In Case', taxi_heading:'Taxis',
+    taxi_intro:"In case anyone needs it, here are a few local taxi contacts:",
+    taxi_1_name:'Miguel — 24h taxi (5 & 7 seats)',
+    taxi_2_name:'Ramón (6 PM – 1 AM)',
+    taxi_3_name:'Mercedes — VTC Horche',
+    taxi_4_name:'Radio Taxi Guadalajara',
     recom_label:'Extras', recom_heading:'Recommendations',
     recom_body:"<p>That week is a public holiday in Guadalajara, so if you still have energy after the wedding, we encourage you to enjoy the atmosphere the following day: there will be traditional communal meals, local festivities, and a bullfight on Saturday afternoon. And for the more adventurous, at 8:00 a.m. the morning after the wedding, there will be a traditional running of the bulls through the streets of Guadalajara, declared a Festival of Regional Tourist Interest.</p><p>Alternatively, if you'd prefer to do a bit of sightseeing, we recommend visiting Brihuega and Torija, two charming villages located very close to Guadalajara.</p>",
     hotel2_label:'Recommended Hotel',
