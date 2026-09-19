@@ -622,7 +622,7 @@
     <div class="upload-zone reveal" id="upload-zone">
       <div class="upload-icon">📷</div>
       <div class="upload-text" data-t="upload_text">Arrastra tus fotos aquí o haz clic para seleccionar</div>
-      <div class="upload-hint" data-t="upload_hint">Fotos y vídeos · Máx. 200MB por archivo</div>
+      <div class="upload-hint" data-t="upload_hint">Fotos y vídeos</div>
       <input type="file" id="file-input" accept="image/*,video/*" multiple hidden />
     </div>
     <div class="upload-progress-list" id="upload-progress-list"></div>
@@ -697,8 +697,7 @@ const T = {
     hotel2_body:'Si deseas quedarte a dormir en Guadalajara, otra muy buena opción es el Hotel Meliá. Cuenta con parking y está especialmente bien comunicado para quienes vengan en coche, ya que tiene muy buena llegada desde el Monasterio de Lupiana y una salida muy cómoda a la A-2 para regresar a Madrid.',
     fotos_label:'Compartir', fotos_heading:'Fotos', fotos_script:'¡Compartid vuestros momentos!',
     fotos_intro:'Subid aquí vuestras fotos y vídeos de la boda para que todos podamos disfrutarlos y descargarlos. ¡Gracias por compartir!',
-    upload_text:'Arrastra tus fotos aquí o haz clic para seleccionar', upload_hint:'Fotos y vídeos · Máx. 200MB por archivo',
-    upload_size_error:'es demasiado grande (máx. 200MB). Prueba a comprimir el vídeo o subir una versión más corta.',
+    upload_text:'Arrastra tus fotos aquí o haz clic para seleccionar', upload_hint:'Fotos y vídeos',
     uploading_text:'Subiendo…', upload_done_text:'Listo ✓', upload_error_text:'Error',
     gallery_empty:'Aún no hay fotos. ¡Sé el primero en compartir!', download_label:'Descargar',
     compressing_text:'Comprimiendo imagen…', large_file_text:'Vídeo pesado, subiendo y optimizando (puede tardar)…',
@@ -753,8 +752,7 @@ const T = {
     hotel2_body:"If you'd like to stay overnight in Guadalajara, another great option is the Hotel Meliá. It has parking and is especially convenient for those coming by car, as it's easily accessible from the Monastery of Lupiana and offers a very straightforward exit to the A-2 for returning to Madrid.",
     fotos_label:'Share', fotos_heading:'Photos', fotos_script:'Share your moments!',
     fotos_intro:'Upload your wedding photos and videos here so everyone can enjoy and download them. Thanks for sharing!',
-    upload_text:'Drag your photos here or click to select', upload_hint:'Photos & videos · Max 200MB per file',
-    upload_size_error:'is too large (max 200MB). Try compressing the video or uploading a shorter clip.',
+    upload_text:'Drag your photos here or click to select', upload_hint:'Photos & videos',
     uploading_text:'Uploading…', upload_done_text:'Done ✓', upload_error_text:'Error',
     gallery_empty:'No photos yet. Be the first to share!', download_label:'Download',
     compressing_text:'Compressing image…', large_file_text:'Large video, uploading and optimizing (may take a while)…',
@@ -865,7 +863,6 @@ const db = firebase.firestore();
 
 const CLOUDINARY_CLOUD_NAME = 'p1rybcvd';
 const CLOUDINARY_UPLOAD_PRESET = 'wedding-guests';
-const MAX_FILE_SIZE_MB = 200;
 const COMPRESS_IMAGE_THRESHOLD_MB = 8;
 const LARGE_VIDEO_WARN_MB = 25;
 
@@ -891,10 +888,6 @@ fileInput.addEventListener('change', () => {
 function handleFiles(fileList) {
   Array.from(fileList).forEach(file => {
     if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) return;
-    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      alert(file.name + ' ' + (T[lang]['upload_size_error'] || ('is too large (max ' + MAX_FILE_SIZE_MB + 'MB)')));
-      return;
-    }
     uploadFile(file);
   });
 }
