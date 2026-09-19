@@ -274,6 +274,55 @@
     .taxi-name { font-weight: 600; color: var(--dark); }
     .taxi-phone { color: var(--sage-dk); text-decoration: none; border-bottom: 1px solid rgba(143,181,163,.4); }
     .taxi-phone:hover { color: var(--dark); }
+
+    /* ── FOTOS PAGE ───────────────────────── */
+    #page-fotos { background: var(--ivory); }
+    #page-fotos .section-wrap { max-width: 980px; }
+    .upload-zone {
+      margin-top: 2rem; border: 2px dashed rgba(143,181,163,.5); background: rgba(240,234,224,.5);
+      border-radius: 4px; padding: 2.8rem 1.5rem; text-align: center; cursor: pointer;
+      transition: border-color .25s, background .25s;
+    }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--sage-dk); background: rgba(143,181,163,.12); }
+    .upload-icon { font-size: 2rem; margin-bottom: .6rem; }
+    .upload-text { font-size: .85rem; color: var(--charcoal); letter-spacing: .02em; }
+    .upload-hint { font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: .5rem; }
+    .upload-progress-list { margin-top: 1rem; display: flex; flex-direction: column; gap: .5rem; }
+    .upload-progress-item {
+      display: flex; align-items: center; gap: .7rem; font-size: .78rem; color: var(--charcoal);
+      background: rgba(237,229,216,.7); border: 1px solid rgba(143,181,163,.2); padding: .55rem .8rem;
+    }
+    .upload-progress-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .upload-progress-bar-wrap { width: 90px; height: 4px; background: rgba(143,181,163,.25); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+    .upload-progress-bar { height: 100%; background: var(--sage-dk); width: 0%; transition: width .2s; }
+    .upload-progress-status { font-size: .7rem; flex-shrink: 0; min-width: 60px; text-align: right; }
+    .upload-progress-status.done { color: var(--sage-dk); }
+    .upload-progress-status.error { color: var(--coral); }
+    .photo-gallery {
+      margin-top: 2.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px,1fr)); gap: 8px;
+    }
+    .gallery-item {
+      position: relative; aspect-ratio: 1/1; overflow: hidden; background: var(--dark);
+      border: 1px solid rgba(143,181,163,.2);
+    }
+    .gallery-item img, .gallery-item video {
+      width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s;
+    }
+    .gallery-item:hover img, .gallery-item:hover video { transform: scale(1.05); }
+    .gallery-download {
+      position: absolute; bottom: 6px; right: 6px; width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(30,26,22,.65); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center;
+      text-decoration: none; font-size: .9rem; color: var(--cream); transition: background .2s;
+    }
+    .gallery-download:hover { background: var(--sage-dk); }
+    .gallery-empty {
+      margin-top: 2rem; text-align: center; font-size: .85rem; color: var(--muted); padding: 2rem 0;
+      display: none;
+    }
+    .gallery-empty.visible { display: block; }
+    @media(max-width:700px){
+      .photo-gallery { grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); }
+    }
   </style>
 </head>
 <body>
@@ -288,6 +337,7 @@
   <div class="nav-links">
     <button onclick="goTo('viaje')" data-page="viaje" data-t="nav_viaje">Más Información</button>
     <button onclick="goTo('lista')" data-page="lista" data-t="nav_lista">Lista de Bodas</button>
+    <button onclick="goTo('fotos')" data-page="fotos" data-t="nav_fotos">Fotos</button>
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('es')">ES</button>
       <button class="lang-btn"        onclick="setLang('en')">EN</button>
@@ -301,6 +351,7 @@
   <button class="page-dot"        onclick="goTo('lugar')" title="El Lugar"></button>
   <button class="page-dot"        onclick="goTo('viaje')" title="El Viaje"></button>
   <button class="page-dot"        onclick="goTo('lista')" title="Lista de Bodas"></button>
+  <button class="page-dot"        onclick="goTo('fotos')" title="Fotos"></button>
 </div>
 
 <!-- ══════════════════════════════════════════ -->
@@ -501,12 +552,40 @@
   <div class="page-footer"><div class="footer-monogram">A &amp; J</div><p>18 · Septiembre · 2026 · Guadalajara</p></div>
 </div>
 
+<!-- ══════════════════════════════════════════ -->
+<!-- PAGE · FOTOS                               -->
+<!-- ══════════════════════════════════════════ -->
+<div id="page-fotos" class="page">
+  <div class="section-wrap">
+    <span class="sec-label" data-t="fotos_label">Compartir</span>
+    <span class="sec-heading-serif" data-t="fotos_heading">Fotos</span>
+    <span class="sec-heading-script" data-t="fotos_script">¡Compartid vuestros momentos!</span>
+    <div class="sec-rule left"></div>
+    <p class="recom-body" data-t="fotos_intro">Subid aquí vuestras fotos y vídeos de la boda para que todos podamos disfrutarlos y descargarlos. ¡Gracias por compartir!</p>
+
+    <div class="upload-zone reveal" id="upload-zone">
+      <div class="upload-icon">📷</div>
+      <div class="upload-text" data-t="upload_text">Arrastra tus fotos aquí o haz clic para seleccionar</div>
+      <div class="upload-hint" data-t="upload_hint">Fotos y vídeos · Máx. 50MB por archivo</div>
+      <input type="file" id="file-input" accept="image/*,video/*" multiple hidden />
+    </div>
+    <div class="upload-progress-list" id="upload-progress-list"></div>
+
+    <div class="photo-gallery reveal" id="photo-gallery"></div>
+    <div class="gallery-empty" id="gallery-empty" data-t="gallery_empty">Aún no hay fotos. ¡Sé el primero en compartir!</div>
+  </div>
+  <div class="page-footer"><div class="footer-monogram">A &amp; J</div><p>18 · Septiembre · 2026 · Guadalajara</p></div>
+</div>
+
+<!-- Firebase (compat SDK — plain script, no bundler needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
 <script>
 // ── TRANSLATIONS ─────────────────────────────────
 const T = {
   es: {
-    nav_home:'Inicio', nav_lugar:'Programa', nav_viaje:'Más Información', nav_lista:'Lista de Bodas',
+    nav_home:'Inicio', nav_lugar:'Programa', nav_viaje:'Más Información', nav_lista:'Lista de Bodas', nav_fotos:'Fotos',
     hero_eyebrow:'18 · Septiembre · 2026 · Guadalajara',
     hero_script:'se casan!', hero_cta:'SRC', hero_date:'18 de Septiembre 2026',
     photo_cap1:'Ana & Javi', photo_cap2:'Juntos', photo_cap3:'El gran día',
@@ -552,10 +631,15 @@ const T = {
     recom_body:'<p>Esa semana es festivo en Guadalajara, así que, si después de la boda todavía os quedan ganas, os animamos a disfrutar también del ambiente del día siguiente: habrá comidas populares, verbenas y corrida de toros la tarde del sábado. Y para los más valientes, a las 8:00 de la mañana, después de la boda, encierro por las calles de Guadalajara, declarado fiesta de Interés Turístico Regional.</p><p>Si por el contrario os apetece aprovechar para hacer un poco de turismo, os recomendamos acercaros a Brihuega y Torija, dos pueblos con mucho encanto situados muy cerca de Guadalajara.</p>',
     hotel2_label:'Hotel Recomendado',
     hotel2_body:'Si deseas quedarte a dormir en Guadalajara, otra muy buena opción es el Hotel Meliá. Cuenta con parking y está especialmente bien comunicado para quienes vengan en coche, ya que tiene muy buena llegada desde el Monasterio de Lupiana y una salida muy cómoda a la A-2 para regresar a Madrid.',
+    fotos_label:'Compartir', fotos_heading:'Fotos', fotos_script:'¡Compartid vuestros momentos!',
+    fotos_intro:'Subid aquí vuestras fotos y vídeos de la boda para que todos podamos disfrutarlos y descargarlos. ¡Gracias por compartir!',
+    upload_text:'Arrastra tus fotos aquí o haz clic para seleccionar', upload_hint:'Fotos y vídeos · Máx. 50MB por archivo',
+    uploading_text:'Subiendo…', upload_done_text:'Listo ✓', upload_error_text:'Error',
+    gallery_empty:'Aún no hay fotos. ¡Sé el primero en compartir!', download_label:'Descargar',
     footer_love:'Hecho con mucho amor ♥'
   },
   en: {
-    nav_home:'Home', nav_lugar:'Programme', nav_viaje:'More Info', nav_lista:'Gift List',
+    nav_home:'Home', nav_lugar:'Programme', nav_viaje:'More Info', nav_lista:'Gift List', nav_fotos:'Photos',
     hero_eyebrow:'18 · September · 2026 · Guadalajara',
     hero_script:"are getting married!", hero_cta:'RSVP', hero_date:'18 September 2026',
     photo_cap1:'Ana & Javi', photo_cap2:'Together', photo_cap3:'The big day',
@@ -601,6 +685,11 @@ const T = {
     recom_body:"<p>That week is a public holiday in Guadalajara, so if you still have energy after the wedding, we encourage you to enjoy the atmosphere the following day: there will be traditional communal meals, local festivities, and a bullfight on Saturday afternoon. And for the more adventurous, at 8:00 a.m. the morning after the wedding, there will be a traditional running of the bulls through the streets of Guadalajara, declared a Festival of Regional Tourist Interest.</p><p>Alternatively, if you'd prefer to do a bit of sightseeing, we recommend visiting Brihuega and Torija, two charming villages located very close to Guadalajara.</p>",
     hotel2_label:'Recommended Hotel',
     hotel2_body:"If you'd like to stay overnight in Guadalajara, another great option is the Hotel Meliá. It has parking and is especially convenient for those coming by car, as it's easily accessible from the Monastery of Lupiana and offers a very straightforward exit to the A-2 for returning to Madrid.",
+    fotos_label:'Share', fotos_heading:'Photos', fotos_script:'Share your moments!',
+    fotos_intro:'Upload your wedding photos and videos here so everyone can enjoy and download them. Thanks for sharing!',
+    upload_text:'Drag your photos here or click to select', upload_hint:'Photos & videos · Max 50MB per file',
+    uploading_text:'Uploading…', upload_done_text:'Done ✓', upload_error_text:'Error',
+    gallery_empty:'No photos yet. Be the first to share!', download_label:'Download',
     footer_love:'Made with love ♥'
   }
 };
@@ -630,7 +719,7 @@ function setLang(l) {
 }
 
 // ── PAGE NAVIGATION ───────────────────────────────
-const pages = ['home','lugar','viaje','lista'];
+const pages = ['home','lugar','viaje','lista','fotos'];
 let current = 'home';
 
 function goTo(id) {
@@ -687,6 +776,133 @@ document.addEventListener('keydown', e => {
   const i = pages.indexOf(current);
   if (e.key==='ArrowRight' && i<pages.length-1) goTo(pages[i+1]);
   if (e.key==='ArrowLeft'  && i>0)              goTo(pages[i-1]);
+});
+
+// ── FOTOS: FIREBASE + CLOUDINARY ──────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyBD9yNah331dq4MFNmfn-6bAXVipE9etGc",
+  authDomain: "ana-javi-boda.firebaseapp.com",
+  projectId: "ana-javi-boda",
+  storageBucket: "ana-javi-boda.firebasestorage.app",
+  messagingSenderId: "380747102502",
+  appId: "1:380747102502:web:44bff7f3ff6f6b390fa9e7"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const CLOUDINARY_CLOUD_NAME = 'p1rybcvd';
+const CLOUDINARY_UPLOAD_PRESET = 'unsigned';
+const MAX_FILE_SIZE_MB = 50;
+
+const uploadZone = document.getElementById('upload-zone');
+const fileInput = document.getElementById('file-input');
+const progressList = document.getElementById('upload-progress-list');
+const gallery = document.getElementById('photo-gallery');
+const galleryEmpty = document.getElementById('gallery-empty');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) handleFiles(fileInput.files);
+  fileInput.value = '';
+});
+
+function handleFiles(fileList) {
+  Array.from(fileList).forEach(file => {
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) return;
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      alert((file.name) + ': ' + (T[lang]['upload_error_text'] || 'Error') + ' (> ' + MAX_FILE_SIZE_MB + 'MB)');
+      return;
+    }
+    uploadFile(file);
+  });
+}
+
+function uploadFile(file) {
+  const row = document.createElement('div');
+  row.className = 'upload-progress-item';
+  row.innerHTML =
+    '<span class="upload-progress-name">' + file.name + '</span>' +
+    '<span class="upload-progress-bar-wrap"><span class="upload-progress-bar"></span></span>' +
+    '<span class="upload-progress-status">' + (T[lang]['uploading_text'] || 'Uploading…') + '</span>';
+  progressList.appendChild(row);
+  const bar = row.querySelector('.upload-progress-bar');
+  const status = row.querySelector('.upload-progress-status');
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/auto/upload');
+
+  xhr.upload.addEventListener('progress', e => {
+    if (e.lengthComputable) {
+      const pct = Math.round((e.loaded / e.total) * 100);
+      bar.style.width = pct + '%';
+    }
+  });
+
+  xhr.onload = () => {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      const res = JSON.parse(xhr.responseText);
+      db.collection('photos').add({
+        url: res.secure_url,
+        publicId: res.public_id,
+        resourceType: res.resource_type,
+        format: res.format,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        bar.style.width = '100%';
+        status.textContent = T[lang]['upload_done_text'] || 'Done ✓';
+        status.classList.add('done');
+        setTimeout(() => row.remove(), 2500);
+      }).catch(() => {
+        status.textContent = T[lang]['upload_error_text'] || 'Error';
+        status.classList.add('error');
+      });
+    } else {
+      status.textContent = T[lang]['upload_error_text'] || 'Error';
+      status.classList.add('error');
+    }
+  };
+  xhr.onerror = () => {
+    status.textContent = T[lang]['upload_error_text'] || 'Error';
+    status.classList.add('error');
+  };
+  xhr.send(formData);
+}
+
+function attachmentUrl(url) {
+  return url.replace('/upload/', '/upload/fl_attachment/');
+}
+
+db.collection('photos').orderBy('createdAt', 'desc').limit(300).onSnapshot(snapshot => {
+  gallery.innerHTML = '';
+  if (snapshot.empty) {
+    galleryEmpty.classList.add('visible');
+    return;
+  }
+  galleryEmpty.classList.remove('visible');
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const item = document.createElement('div');
+    item.className = 'gallery-item reveal visible';
+    const media = data.resourceType === 'video'
+      ? '<video src="' + data.url + '" muted playsinline preload="metadata"></video>'
+      : '<img src="' + data.url + '" loading="lazy" alt="Foto de la boda" />';
+    item.innerHTML = media +
+      '<a class="gallery-download" href="' + attachmentUrl(data.url) + '" title="' + (T[lang]['download_label'] || 'Download') + '" download>⬇</a>';
+    gallery.appendChild(item);
+  });
+}, err => {
+  console.error('Firestore snapshot error:', err);
 });
 </script>
 </body>
