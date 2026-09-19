@@ -996,6 +996,14 @@ async function uploadFile(file) {
 function attachmentUrl(url) {
   return url.replace('/upload/', '/upload/fl_attachment/');
 }
+// Small, compressed thumbnail for grid tiles / floating photos — big perf win vs loading full-res originals
+function thumbUrl(url, size) {
+  return url.replace('/upload/', '/upload/c_fill,w_' + size + ',h_' + size + ',q_auto,f_auto/');
+}
+// Full-size but format/quality-optimized version for the lightbox viewer
+function lightboxUrl(url) {
+  return url.replace('/upload/', '/upload/q_auto,f_auto/');
+}
 
 // ── LIGHTBOX (with prev/next) ───────────────────────
 let photosData = [];
@@ -1007,7 +1015,7 @@ function renderLightboxMedia() {
   const content = document.getElementById('lightbox-content');
   content.innerHTML = data.resourceType === 'video'
     ? '<video src="' + data.url + '" controls autoplay playsinline></video>'
-    : '<img src="' + data.url + '" alt="Foto de la boda">';
+    : '<img src="' + lightboxUrl(data.url) + '" alt="Foto de la boda">';
 }
 function openLightbox(index) {
   currentLightboxIndex = index;
@@ -1064,7 +1072,7 @@ function cycleHeroFloater(i) {
     const zone = heroFloaterZones[zoneIdx];
     el.style.left = zone.left;
     el.style.top = zone.top;
-    el.querySelector('img').src = guestPhotoPool[Math.floor(Math.random() * guestPhotoPool.length)];
+    el.querySelector('img').src = thumbUrl(guestPhotoPool[Math.floor(Math.random() * guestPhotoPool.length)], 240);
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('visible')));
     const visibleDuration = 3200 + Math.random() * 2000;
     setTimeout(() => cycleHeroFloater(i), visibleDuration);
@@ -1096,7 +1104,7 @@ db.collection('photos').orderBy('createdAt', 'desc').limit(300).onSnapshot(snaps
       item.className = 'gallery-item reveal visible';
       const media = data.resourceType === 'video'
         ? '<video src="' + data.url + '" muted playsinline preload="metadata"></video>'
-        : '<img src="' + data.url + '" loading="lazy" alt="Foto de la boda" />';
+        : '<img src="' + thumbUrl(data.url, 400) + '" loading="lazy" decoding="async" alt="Foto de la boda" />';
       item.innerHTML = media +
         '<a class="gallery-download" href="' + attachmentUrl(data.url) + '" title="' + (T[lang]['download_label'] || 'Download') + '" download>⬇</a>';
       const capturedIdx = idx;
