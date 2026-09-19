@@ -683,13 +683,45 @@
       const outputName = 'output.mp4';
 
       await ffmpeg.writeFile(inputName, await fetchFile(file));
-      await ffmpeg.exec([
-        '-i', inputName,
-        '-vf', "scale='min(1280,iw)':-2",
-        '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '28',
-        '-c:a', 'aac', '-b:a', '128k',
-        outputName
-      ]);
+
+      // A fixed CRF gives unpredictable output size — fine for short clips, but a long
+      // or high-motion video can still land over the 95MB Cloudinary ceiling. Probe the
+      // duration first (from ffmpeg's own stderr log) so we can target a bitrate that
+      // guarantees the output stays under our budget regardless of clip length.
+      let durationSeconds = null;
+      const logHandler = ({ message }) => {
+        const match = message.match(/Duration:\s*(\d+):(\d+):(\d+\.\d+)/);
+        if (match) durationSeconds = (+match[1]) * 3600 + (+match[2]) * 60 + parseFloat(match[3]);
+      };
+      ffmpeg.on('log', logHandler);
+      try {
+        // No output specified, so this "fails" fast — we only need the Duration line it logs first.
+        await ffmpeg.exec(['-i', inputName]);
+      } catch (e) { /* expected */ }
+      ffmpeg.off('log', logHandler);
+
+      const TARGET_TOTAL_MB = 80; // safety margin under the 95MB hard check
+      const AUDIO_KBPS = 96;
+      let videoArgs;
+      if (durationSeconds && durationSeconds > 0) {
+        const targetTotalKbits = TARGET_TOTAL_MB * 8192; // MB -> kilobits
+        const videoKbps = Math.max(Math.floor(targetTotalKbits / durationSeconds) - AUDIO_KBPS, 300);
+        videoArgs = [
+          '-vf', "scale='min(1280,iw)':-2",
+          '-c:v', 'libx264', '-preset', 'veryfast',
+          '-b:v', videoKbps + 'k', '-maxrate', Math.round(videoKbps * 1.5) + 'k', '-bufsize', (videoKbps * 2) + 'k',
+          '-c:a', 'aac', '-b:a', AUDIO_KBPS + 'k'
+        ];
+      } else {
+        // Couldn't read the duration — fall back to a conservative fixed quality/resolution.
+        videoArgs = [
+          '-vf', "scale='min(960,iw)':-2",
+          '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '32',
+          '-c:a', 'aac', '-b:a', AUDIO_KBPS + 'k'
+        ];
+      }
+
+      await ffmpeg.exec(['-i', inputName, ...videoArgs, outputName]);
       const data = await ffmpeg.readFile(outputName);
       ffmpeg.off('progress', progressHandler);
       try { await ffmpeg.deleteFile(inputName); await ffmpeg.deleteFile(outputName); } catch (e) {}
