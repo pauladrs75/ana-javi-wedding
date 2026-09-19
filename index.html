@@ -645,6 +645,62 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
+<!-- ffmpeg.wasm — loaded lazily (only when a large video needs compressing), exposes
+     window.compressVideoFile(file, onProgress) -> Promise<Blob|null> to the main script below -->
+<script type="module">
+  import { FFmpeg } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js';
+  import { fetchFile, toBlobURL } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js';
+
+  let ffmpegInstance = null;
+  let ffmpegLoadingPromise = null;
+
+  async function getFFmpeg() {
+    if (ffmpegInstance) return ffmpegInstance;
+    if (ffmpegLoadingPromise) return ffmpegLoadingPromise;
+    ffmpegLoadingPromise = (async () => {
+      const ffmpeg = new FFmpeg();
+      const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm';
+      await ffmpeg.load({
+        coreURL: await toBlobURL(baseURL + '/ffmpeg-core.js', 'text/javascript'),
+        wasmURL: await toBlobURL(baseURL + '/ffmpeg-core.wasm', 'application/wasm')
+      });
+      ffmpegInstance = ffmpeg;
+      return ffmpeg;
+    })();
+    return ffmpegLoadingPromise;
+  }
+
+  window.compressVideoFile = async function (file, onProgress) {
+    try {
+      const ffmpeg = await getFFmpeg();
+      const progressHandler = ({ progress }) => {
+        if (onProgress) onProgress(Math.max(0, Math.min(100, Math.round(progress * 100))));
+      };
+      ffmpeg.on('progress', progressHandler);
+
+      const ext = (file.name.match(/\.[^.]+$/) || ['.mp4'])[0];
+      const inputName = 'input' + ext;
+      const outputName = 'output.mp4';
+
+      await ffmpeg.writeFile(inputName, await fetchFile(file));
+      await ffmpeg.exec([
+        '-i', inputName,
+        '-vf', "scale='min(1280,iw)':-2",
+        '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '28',
+        '-c:a', 'aac', '-b:a', '128k',
+        outputName
+      ]);
+      const data = await ffmpeg.readFile(outputName);
+      ffmpeg.off('progress', progressHandler);
+      try { await ffmpeg.deleteFile(inputName); await ffmpeg.deleteFile(outputName); } catch (e) {}
+      return new Blob([data.buffer], { type: 'video/mp4' });
+    } catch (err) {
+      console.error('Video compression failed, will upload original:', err);
+      return null;
+    }
+  };
+</script>
+
 <script>
 // ── TRANSLATIONS ─────────────────────────────────
 const T = {
@@ -700,7 +756,7 @@ const T = {
     upload_text:'Arrastra tus fotos aquí o haz clic para seleccionar', upload_hint:'Fotos y vídeos (vídeos: máx. 95MB)',
     uploading_text:'Subiendo…', upload_done_text:'Listo ✓', upload_error_text:'Error',
     gallery_empty:'Aún no hay fotos. ¡Sé el primero en compartir!', download_label:'Descargar',
-    compressing_text:'Comprimiendo imagen…', large_file_text:'Vídeo pesado, subiendo y optimizando (puede tardar)…',
+    compressing_text:'Comprimiendo imagen…', compressing_video_text:'Comprimiendo vídeo…', large_file_text:'Vídeo pesado, subiendo y optimizando (puede tardar)…',
     video_size_error:'es demasiado grande (máx. 95MB para vídeos, límite de Cloudinary). Prueba a grabar en menor calidad o subir un clip más corto.',
     footer_love:'Hecho con mucho amor ♥'
   },
@@ -756,7 +812,7 @@ const T = {
     upload_text:'Drag your photos here or click to select', upload_hint:'Photos & videos (videos: max 95MB)',
     uploading_text:'Uploading…', upload_done_text:'Done ✓', upload_error_text:'Error',
     gallery_empty:'No photos yet. Be the first to share!', download_label:'Download',
-    compressing_text:'Compressing image…', large_file_text:'Large video, uploading and optimizing (may take a while)…',
+    compressing_text:'Compressing image…', compressing_video_text:'Compressing video…', large_file_text:'Large video, uploading and optimizing (may take a while)…',
     video_size_error:'is too large (max 95MB for videos, a Cloudinary limit). Try recording at a lower quality or uploading a shorter clip.',
     footer_love:'Made with love ♥'
   }
@@ -891,12 +947,6 @@ fileInput.addEventListener('change', () => {
 function handleFiles(fileList) {
   Array.from(fileList).forEach(file => {
     if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) return;
-    // Cloudinary's free plan hard-caps videos at 100MB — this can't be raised via preset settings,
-    // so we catch it client-side with a clear message instead of a confusing failed upload.
-    if (file.type.startsWith('video/') && file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
-      alert(file.name + ' ' + (T[lang]['video_size_error'] || ('is too large (max ' + MAX_VIDEO_SIZE_MB + 'MB for video)')));
-      return;
-    }
     uploadFile(file);
   });
 }
@@ -948,7 +998,27 @@ async function uploadFile(file) {
     }
     status.textContent = T[lang]['uploading_text'] || 'Uploading…';
   } else if (file.type.startsWith('video/') && file.size > LARGE_VIDEO_WARN_MB * 1024 * 1024) {
-    status.textContent = T[lang]['large_file_text'] || 'Large file, uploading…';
+    if (typeof window.compressVideoFile === 'function') {
+      status.textContent = T[lang]['compressing_video_text'] || 'Compressing video…';
+      const compressedVideo = await window.compressVideoFile(file, pct => {
+        status.textContent = (T[lang]['compressing_video_text'] || 'Compressing video…') + ' ' + pct + '%';
+        bar.style.width = pct + '%';
+      });
+      if (compressedVideo && compressedVideo.size < file.size) {
+        uploadBlob = compressedVideo;
+        uploadName = file.name.replace(/\.[^.]+$/, '') + '.mp4';
+      }
+      bar.style.width = '0%';
+    }
+    status.textContent = T[lang]['uploading_text'] || 'Uploading…';
+  }
+
+  // Cloudinary's free plan hard-caps videos at 100MB — check after compression, not before,
+  // so we only reject clips that are still too large even once shrunk.
+  if (uploadBlob.type && uploadBlob.type.startsWith('video/') && uploadBlob.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
+    status.textContent = T[lang]['video_size_error'] || ('Too large (max ' + MAX_VIDEO_SIZE_MB + 'MB for video)');
+    status.classList.add('error');
+    return;
   }
 
   const formData = new FormData();
