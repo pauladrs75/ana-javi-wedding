@@ -326,49 +326,54 @@
 
     /* ── LIGHTBOX ─────────────────────────── */
     .lightbox {
-      position: fixed; inset: 0; background: rgba(10,8,6,.93); z-index: 2000;
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(240,234,224,.4);
+      -webkit-backdrop-filter: blur(22px) saturate(1.1);
+      backdrop-filter: blur(22px) saturate(1.1);
       display: none; align-items: center; justify-content: center; padding: 2rem;
       cursor: zoom-out;
     }
     .lightbox.visible { display: flex; }
-    .lightbox-content { max-width: 92vw; max-height: 88vh; cursor: default; }
+    .lightbox-content { max-width: 88vw; max-height: 86vh; cursor: default; }
     .lightbox-content img, .lightbox-content video {
-      max-width: 92vw; max-height: 88vh; display: block; margin: 0 auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      max-width: 88vw; max-height: 86vh; display: block; margin: 0 auto;
+      box-shadow: 0 20px 60px rgba(30,26,22,.35);
+      border: 1px solid rgba(255,255,255,.4);
     }
     .lightbox-close {
       position: fixed; top: 1.2rem; right: 1.5rem; background: none; border: none;
-      color: var(--cream); font-size: 2.2rem; line-height: 1; cursor: pointer; z-index: 2001;
-      opacity: .8; transition: opacity .2s;
+      color: var(--dark); font-size: 2.2rem; line-height: 1; cursor: pointer; z-index: 2001;
+      opacity: .7; transition: opacity .2s;
     }
     .lightbox-close:hover { opacity: 1; }
+    .lightbox-nav {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      background: rgba(30,26,22,.35); border: none; color: var(--cream);
+      width: 46px; height: 46px; border-radius: 50%; font-size: 1.5rem; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .2s; z-index: 2001;
+      -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    }
+    .lightbox-nav:hover { background: rgba(30,26,22,.6); }
+    .lightbox-prev { left: 1.2rem; }
+    .lightbox-next { right: 1.2rem; }
+    @media(max-width:700px){
+      .lightbox-nav { width: 38px; height: 38px; font-size: 1.2rem; }
+      .lightbox-prev { left: .4rem; } .lightbox-next { right: .4rem; }
+    }
     .gallery-item { cursor: zoom-in; }
 
-    /* ── HOME · GUEST PHOTO TEASER ────────── */
-    .guest-teaser { background: var(--ivory); padding: 3rem 2rem 3.5rem; text-align: center; display: none; }
-    .guest-teaser.visible { display: block; }
-    .guest-teaser-label {
-      font-size: .6rem; letter-spacing: .25em; text-transform: uppercase; color: var(--sage-dk); margin-bottom: 1.4rem;
+    /* ── HOME · FLOATING GUEST PHOTOS ─────── */
+    .hero-floater {
+      position: absolute; width: clamp(72px, 9vw, 140px); aspect-ratio: 3/4;
+      overflow: hidden; opacity: 0; pointer-events: none;
+      transition: opacity 1.6s ease;
+      border: 1px solid rgba(30,26,22,.15); box-shadow: 0 10px 30px rgba(30,26,22,.12);
+      transform: translate(-50%, -50%); z-index: 0;
     }
-    .guest-teaser-strip { display: flex; gap: 10px; justify-content: center; max-width: 720px; margin: 0 auto; }
-    .guest-tile {
-      flex: 1; aspect-ratio: 3/4; max-width: 160px; overflow: hidden; background: var(--dark); position: relative;
-    }
-    .guest-tile img {
-      width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;
-      opacity: 0; transition: opacity .8s ease;
-    }
-    .guest-tile img.visible { opacity: 1; }
-    .guest-teaser-link {
-      display: inline-block; margin-top: 1.6rem; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
-      color: var(--sage-dk); text-decoration: none; border-bottom: 1px solid var(--sage); padding-bottom: 2px; cursor: pointer;
-      background: none; border-top: none; border-left: none; border-right: none; font-family: 'Montserrat', sans-serif;
-    }
-    .guest-teaser-link:hover { color: var(--dark); border-color: var(--dark); }
-    @media(max-width:700px){
-      .guest-teaser-strip { gap: 6px; }
-      .guest-tile { max-width: 90px; }
-    }
+    .hero-floater.visible { opacity: .92; }
+    .hero-floater img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media(max-width:700px){ .hero-floater { display: none; } }
   </style>
 </head>
 <body>
@@ -406,6 +411,10 @@
 <div id="page-home" class="page active">
   <div class="home-hero stripes">
     <div class="hero-overlay"></div>
+    <div class="hero-floater" id="hero-floater-0"><img alt=""></div>
+    <div class="hero-floater" id="hero-floater-1"><img alt=""></div>
+    <div class="hero-floater" id="hero-floater-2"><img alt=""></div>
+    <div class="hero-floater" id="hero-floater-3"><img alt=""></div>
     <div style="position:relative;z-index:1;">
       <p class="hero-eyebrow" data-t="hero_eyebrow">18 · Septiembre · 2026 · Guadalajara</p>
       <h1 class="hero-names">ANA <span class="amp">&amp;</span> JAVI</h1>
@@ -432,17 +441,6 @@
       <div class="cd-item"><div class="cd-num" id="cd-m">—</div><div class="cd-lbl" data-t="cd_mins">Minutos</div></div>
       <div class="cd-item"><div class="cd-num" id="cd-s">—</div><div class="cd-lbl" data-t="cd_secs">Segundos</div></div>
     </div>
-  </div>
-
-  <div class="guest-teaser" id="guest-teaser">
-    <p class="guest-teaser-label" data-t="guest_teaser_label">Fotos de la boda</p>
-    <div class="guest-teaser-strip">
-      <div class="guest-tile"><img alt=""></div>
-      <div class="guest-tile"><img alt=""></div>
-      <div class="guest-tile"><img alt=""></div>
-      <div class="guest-tile"><img alt=""></div>
-    </div>
-    <button class="guest-teaser-link" onclick="goTo('fotos')" data-t="guest_teaser_cta">Ver todas las fotos →</button>
   </div>
 
   <div class="page-footer"><div class="footer-monogram">A &amp; J</div><p>18 · Septiembre · 2026 · Guadalajara</p></div>
@@ -638,6 +636,8 @@
 <!-- ── LIGHTBOX ─────────────────────────────── -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <button class="lightbox-nav lightbox-prev" onclick="event.stopPropagation(); prevLightbox()">‹</button>
+  <button class="lightbox-nav lightbox-next" onclick="event.stopPropagation(); nextLightbox()">›</button>
   <div class="lightbox-content" id="lightbox-content" onclick="event.stopPropagation()"></div>
 </div>
 
@@ -701,7 +701,6 @@ const T = {
     upload_size_error:'es demasiado grande (máx. 60MB). Prueba a comprimir el vídeo o subir una versión más corta.',
     uploading_text:'Subiendo…', upload_done_text:'Listo ✓', upload_error_text:'Error',
     gallery_empty:'Aún no hay fotos. ¡Sé el primero en compartir!', download_label:'Descargar',
-    guest_teaser_label:'Fotos de la boda', guest_teaser_cta:'Ver todas las fotos →',
     compressing_text:'Comprimiendo imagen…', large_file_text:'Archivo pesado, subiendo (puede tardar)…',
     footer_love:'Hecho con mucho amor ♥'
   },
@@ -758,7 +757,6 @@ const T = {
     upload_size_error:'is too large (max 60MB). Try compressing the video or uploading a shorter clip.',
     uploading_text:'Uploading…', upload_done_text:'Done ✓', upload_error_text:'Error',
     gallery_empty:'No photos yet. Be the first to share!', download_label:'Download',
-    guest_teaser_label:'Wedding Photos', guest_teaser_cta:'See all photos →',
     compressing_text:'Compressing image…', large_file_text:'Large file, uploading (may take a while)…',
     footer_love:'Made with love ♥'
   }
@@ -843,6 +841,11 @@ function switchMap(mode) {
 // ── RSVP ──────────────────────────────────────────
 // ── KEYBOARD NAV ──────────────────────────────────
 document.addEventListener('keydown', e => {
+  if (document.getElementById('lightbox').classList.contains('visible')) {
+    if (e.key === 'ArrowRight') nextLightbox();
+    if (e.key === 'ArrowLeft') prevLightbox();
+    return;
+  }
   const i = pages.indexOf(current);
   if (e.key==='ArrowRight' && i<pages.length-1) goTo(pages[i+1]);
   if (e.key==='ArrowLeft'  && i>0)              goTo(pages[i-1]);
@@ -994,12 +997,21 @@ function attachmentUrl(url) {
   return url.replace('/upload/', '/upload/fl_attachment/');
 }
 
-// ── LIGHTBOX ───────────────────────────────────────
-function openLightbox(url, resourceType) {
+// ── LIGHTBOX (with prev/next) ───────────────────────
+let photosData = [];
+let currentLightboxIndex = -1;
+
+function renderLightboxMedia() {
+  if (currentLightboxIndex < 0 || currentLightboxIndex >= photosData.length) return;
+  const data = photosData[currentLightboxIndex];
   const content = document.getElementById('lightbox-content');
-  content.innerHTML = resourceType === 'video'
-    ? '<video src="' + url + '" controls autoplay playsinline></video>'
-    : '<img src="' + url + '" alt="Foto de la boda">';
+  content.innerHTML = data.resourceType === 'video'
+    ? '<video src="' + data.url + '" controls autoplay playsinline></video>'
+    : '<img src="' + data.url + '" alt="Foto de la boda">';
+}
+function openLightbox(index) {
+  currentLightboxIndex = index;
+  renderLightboxMedia();
   document.getElementById('lightbox').classList.add('visible');
   document.body.style.overflow = 'hidden';
 }
@@ -1007,45 +1019,78 @@ function closeLightbox() {
   document.getElementById('lightbox').classList.remove('visible');
   document.getElementById('lightbox-content').innerHTML = '';
   document.body.style.overflow = '';
+  currentLightboxIndex = -1;
+}
+function nextLightbox() {
+  if (!photosData.length) return;
+  currentLightboxIndex = (currentLightboxIndex + 1) % photosData.length;
+  renderLightboxMedia();
+}
+function prevLightbox() {
+  if (!photosData.length) return;
+  currentLightboxIndex = (currentLightboxIndex - 1 + photosData.length) % photosData.length;
+  renderLightboxMedia();
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-// ── HOME · GUEST PHOTO TEASER ────────────────────────
-const guestTeaser = document.getElementById('guest-teaser');
-const guestTiles = guestTeaser ? Array.from(guestTeaser.querySelectorAll('.guest-tile img')) : [];
+// ── HOME · FLOATING GUEST PHOTOS ─────────────────────
+// Corner/margin zones only — deliberately avoids the centered "ANA & JAVI" text band
+const heroFloaterZones = [
+  {left:'8%',  top:'17%'}, {left:'17%', top:'10%'},
+  {left:'91%', top:'14%'}, {left:'80%', top:'21%'},
+  {left:'12%', top:'80%'}, {left:'21%', top:'87%'},
+  {left:'89%', top:'77%'}, {left:'78%', top:'87%'}
+];
+const heroFloaters = ['hero-floater-0','hero-floater-1','hero-floater-2','hero-floater-3']
+  .map(id => document.getElementById(id)).filter(Boolean);
+const floaterZoneIndex = heroFloaters.map(() => -1);
 let guestPhotoPool = [];
-let guestTeaserStarted = false;
+let heroFloatersStarted = false;
 
-function cycleTile(imgEl) {
-  if (!guestPhotoPool.length) return;
-  imgEl.classList.remove('visible');
-  setTimeout(() => {
-    const next = guestPhotoPool[Math.floor(Math.random() * guestPhotoPool.length)];
-    imgEl.src = next;
-    imgEl.classList.add('visible');
-  }, 700);
+function pickZoneFor(i) {
+  const used = floaterZoneIndex.filter((z, idx) => idx !== i && z >= 0);
+  const candidates = heroFloaterZones.map((_, idx) => idx).filter(idx => !used.includes(idx));
+  const pool = candidates.length ? candidates : heroFloaterZones.map((_, idx) => idx);
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function startGuestTeaser() {
-  if (guestTeaserStarted || !guestTiles.length) return;
-  guestTeaserStarted = true;
-  guestTiles.forEach((imgEl, i) => {
-    imgEl.src = guestPhotoPool[i % guestPhotoPool.length];
-    setTimeout(() => imgEl.classList.add('visible'), 50);
-    const period = 4000 + i * 900;
-    setInterval(() => cycleTile(imgEl), period);
+function cycleHeroFloater(i) {
+  const el = heroFloaters[i];
+  if (!guestPhotoPool.length) { setTimeout(() => cycleHeroFloater(i), 4000); return; }
+  el.classList.remove('visible');
+  setTimeout(() => {
+    const zoneIdx = pickZoneFor(i);
+    floaterZoneIndex[i] = zoneIdx;
+    const zone = heroFloaterZones[zoneIdx];
+    el.style.left = zone.left;
+    el.style.top = zone.top;
+    el.querySelector('img').src = guestPhotoPool[Math.floor(Math.random() * guestPhotoPool.length)];
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('visible')));
+    const visibleDuration = 3200 + Math.random() * 2000;
+    setTimeout(() => cycleHeroFloater(i), visibleDuration);
+  }, 1650);
+}
+
+function startHeroFloaters() {
+  if (heroFloatersStarted || !heroFloaters.length) return;
+  heroFloatersStarted = true;
+  heroFloaters.forEach((el, i) => {
+    setTimeout(() => cycleHeroFloater(i), i * 900);
   });
 }
 
 db.collection('photos').orderBy('createdAt', 'desc').limit(300).onSnapshot(snapshot => {
   gallery.innerHTML = '';
   guestPhotoPool = [];
+  photosData = [];
   if (snapshot.empty) {
     galleryEmpty.classList.add('visible');
   } else {
     galleryEmpty.classList.remove('visible');
+    let idx = 0;
     snapshot.forEach(doc => {
       const data = doc.data();
+      photosData.push(data);
       if (data.resourceType !== 'video') guestPhotoPool.push(data.url);
       const item = document.createElement('div');
       item.className = 'gallery-item reveal visible';
@@ -1054,15 +1099,14 @@ db.collection('photos').orderBy('createdAt', 'desc').limit(300).onSnapshot(snaps
         : '<img src="' + data.url + '" loading="lazy" alt="Foto de la boda" />';
       item.innerHTML = media +
         '<a class="gallery-download" href="' + attachmentUrl(data.url) + '" title="' + (T[lang]['download_label'] || 'Download') + '" download>⬇</a>';
-      item.addEventListener('click', () => openLightbox(data.url, data.resourceType));
+      const capturedIdx = idx;
+      item.addEventListener('click', () => openLightbox(capturedIdx));
       item.querySelector('.gallery-download').addEventListener('click', e => e.stopPropagation());
       gallery.appendChild(item);
+      idx++;
     });
   }
-  if (guestPhotoPool.length >= 3 && guestTeaser) {
-    guestTeaser.classList.add('visible');
-    startGuestTeaser();
-  }
+  if (guestPhotoPool.length >= 3) startHeroFloaters();
 }, err => {
   console.error('Firestore snapshot error:', err);
 });
