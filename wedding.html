@@ -323,6 +323,52 @@
     @media(max-width:700px){
       .photo-gallery { grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); }
     }
+
+    /* ── LIGHTBOX ─────────────────────────── */
+    .lightbox {
+      position: fixed; inset: 0; background: rgba(10,8,6,.93); z-index: 2000;
+      display: none; align-items: center; justify-content: center; padding: 2rem;
+      cursor: zoom-out;
+    }
+    .lightbox.visible { display: flex; }
+    .lightbox-content { max-width: 92vw; max-height: 88vh; cursor: default; }
+    .lightbox-content img, .lightbox-content video {
+      max-width: 92vw; max-height: 88vh; display: block; margin: 0 auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    }
+    .lightbox-close {
+      position: fixed; top: 1.2rem; right: 1.5rem; background: none; border: none;
+      color: var(--cream); font-size: 2.2rem; line-height: 1; cursor: pointer; z-index: 2001;
+      opacity: .8; transition: opacity .2s;
+    }
+    .lightbox-close:hover { opacity: 1; }
+    .gallery-item { cursor: zoom-in; }
+
+    /* ── HOME · GUEST PHOTO TEASER ────────── */
+    .guest-teaser { background: var(--ivory); padding: 3rem 2rem 3.5rem; text-align: center; display: none; }
+    .guest-teaser.visible { display: block; }
+    .guest-teaser-label {
+      font-size: .6rem; letter-spacing: .25em; text-transform: uppercase; color: var(--sage-dk); margin-bottom: 1.4rem;
+    }
+    .guest-teaser-strip { display: flex; gap: 10px; justify-content: center; max-width: 720px; margin: 0 auto; }
+    .guest-tile {
+      flex: 1; aspect-ratio: 3/4; max-width: 160px; overflow: hidden; background: var(--dark); position: relative;
+    }
+    .guest-tile img {
+      width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;
+      opacity: 0; transition: opacity .8s ease;
+    }
+    .guest-tile img.visible { opacity: 1; }
+    .guest-teaser-link {
+      display: inline-block; margin-top: 1.6rem; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--sage-dk); text-decoration: none; border-bottom: 1px solid var(--sage); padding-bottom: 2px; cursor: pointer;
+      background: none; border-top: none; border-left: none; border-right: none; font-family: 'Montserrat', sans-serif;
+    }
+    .guest-teaser-link:hover { color: var(--dark); border-color: var(--dark); }
+    @media(max-width:700px){
+      .guest-teaser-strip { gap: 6px; }
+      .guest-tile { max-width: 90px; }
+    }
   </style>
 </head>
 <body>
@@ -387,6 +433,18 @@
       <div class="cd-item"><div class="cd-num" id="cd-s">—</div><div class="cd-lbl" data-t="cd_secs">Segundos</div></div>
     </div>
   </div>
+
+  <div class="guest-teaser" id="guest-teaser">
+    <p class="guest-teaser-label" data-t="guest_teaser_label">Fotos de la boda</p>
+    <div class="guest-teaser-strip">
+      <div class="guest-tile"><img alt=""></div>
+      <div class="guest-tile"><img alt=""></div>
+      <div class="guest-tile"><img alt=""></div>
+      <div class="guest-tile"><img alt=""></div>
+    </div>
+    <button class="guest-teaser-link" onclick="goTo('fotos')" data-t="guest_teaser_cta">Ver todas las fotos →</button>
+  </div>
+
   <div class="page-footer"><div class="footer-monogram">A &amp; J</div><p>18 · Septiembre · 2026 · Guadalajara</p></div>
 </div>
 
@@ -577,6 +635,12 @@
   <div class="page-footer"><div class="footer-monogram">A &amp; J</div><p>18 · Septiembre · 2026 · Guadalajara</p></div>
 </div>
 
+<!-- ── LIGHTBOX ─────────────────────────────── -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <div class="lightbox-content" id="lightbox-content" onclick="event.stopPropagation()"></div>
+</div>
+
 <!-- Firebase (compat SDK — plain script, no bundler needed) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -637,6 +701,8 @@ const T = {
     upload_size_error:'es demasiado grande (máx. 60MB). Prueba a comprimir el vídeo o subir una versión más corta.',
     uploading_text:'Subiendo…', upload_done_text:'Listo ✓', upload_error_text:'Error',
     gallery_empty:'Aún no hay fotos. ¡Sé el primero en compartir!', download_label:'Descargar',
+    guest_teaser_label:'Fotos de la boda', guest_teaser_cta:'Ver todas las fotos →',
+    compressing_text:'Comprimiendo imagen…', large_file_text:'Archivo pesado, subiendo (puede tardar)…',
     footer_love:'Hecho con mucho amor ♥'
   },
   en: {
@@ -692,6 +758,8 @@ const T = {
     upload_size_error:'is too large (max 60MB). Try compressing the video or uploading a shorter clip.',
     uploading_text:'Uploading…', upload_done_text:'Done ✓', upload_error_text:'Error',
     gallery_empty:'No photos yet. Be the first to share!', download_label:'Download',
+    guest_teaser_label:'Wedding Photos', guest_teaser_cta:'See all photos →',
+    compressing_text:'Compressing image…', large_file_text:'Large file, uploading (may take a while)…',
     footer_love:'Made with love ♥'
   }
 };
@@ -795,6 +863,8 @@ const db = firebase.firestore();
 const CLOUDINARY_CLOUD_NAME = 'p1rybcvd';
 const CLOUDINARY_UPLOAD_PRESET = 'wedding-guests';
 const MAX_FILE_SIZE_MB = 60;
+const COMPRESS_IMAGE_THRESHOLD_MB = 8;
+const LARGE_VIDEO_WARN_MB = 25;
 
 const uploadZone = document.getElementById('upload-zone');
 const fileInput = document.getElementById('file-input');
@@ -826,7 +896,31 @@ function handleFiles(fileList) {
   });
 }
 
-function uploadFile(file) {
+// Resize + re-encode a large image client-side before upload
+function compressImage(file, maxDim, quality) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const objUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+        else { width = Math.round(width * maxDim / height); height = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(blob => {
+        URL.revokeObjectURL(objUrl);
+        resolve(blob);
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(objUrl); resolve(null); };
+    img.src = objUrl;
+  });
+}
+
+async function uploadFile(file) {
   const row = document.createElement('div');
   row.className = 'upload-progress-item';
   row.innerHTML =
@@ -837,8 +931,23 @@ function uploadFile(file) {
   const bar = row.querySelector('.upload-progress-bar');
   const status = row.querySelector('.upload-progress-status');
 
+  let uploadBlob = file;
+  let uploadName = file.name;
+
+  if (file.type.startsWith('image/') && file.size > COMPRESS_IMAGE_THRESHOLD_MB * 1024 * 1024) {
+    status.textContent = T[lang]['compressing_text'] || 'Compressing…';
+    const compressed = await compressImage(file, 2560, 0.82);
+    if (compressed && compressed.size < file.size) {
+      uploadBlob = compressed;
+      uploadName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+    }
+    status.textContent = T[lang]['uploading_text'] || 'Uploading…';
+  } else if (file.type.startsWith('video/') && file.size > LARGE_VIDEO_WARN_MB * 1024 * 1024) {
+    status.textContent = T[lang]['large_file_text'] || 'Large file, uploading…';
+  }
+
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append('file', uploadBlob, uploadName);
   formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
   const xhr = new XMLHttpRequest();
@@ -885,24 +994,75 @@ function attachmentUrl(url) {
   return url.replace('/upload/', '/upload/fl_attachment/');
 }
 
+// ── LIGHTBOX ───────────────────────────────────────
+function openLightbox(url, resourceType) {
+  const content = document.getElementById('lightbox-content');
+  content.innerHTML = resourceType === 'video'
+    ? '<video src="' + url + '" controls autoplay playsinline></video>'
+    : '<img src="' + url + '" alt="Foto de la boda">';
+  document.getElementById('lightbox').classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('visible');
+  document.getElementById('lightbox-content').innerHTML = '';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// ── HOME · GUEST PHOTO TEASER ────────────────────────
+const guestTeaser = document.getElementById('guest-teaser');
+const guestTiles = guestTeaser ? Array.from(guestTeaser.querySelectorAll('.guest-tile img')) : [];
+let guestPhotoPool = [];
+let guestTeaserStarted = false;
+
+function cycleTile(imgEl) {
+  if (!guestPhotoPool.length) return;
+  imgEl.classList.remove('visible');
+  setTimeout(() => {
+    const next = guestPhotoPool[Math.floor(Math.random() * guestPhotoPool.length)];
+    imgEl.src = next;
+    imgEl.classList.add('visible');
+  }, 700);
+}
+
+function startGuestTeaser() {
+  if (guestTeaserStarted || !guestTiles.length) return;
+  guestTeaserStarted = true;
+  guestTiles.forEach((imgEl, i) => {
+    imgEl.src = guestPhotoPool[i % guestPhotoPool.length];
+    setTimeout(() => imgEl.classList.add('visible'), 50);
+    const period = 4000 + i * 900;
+    setInterval(() => cycleTile(imgEl), period);
+  });
+}
+
 db.collection('photos').orderBy('createdAt', 'desc').limit(300).onSnapshot(snapshot => {
   gallery.innerHTML = '';
+  guestPhotoPool = [];
   if (snapshot.empty) {
     galleryEmpty.classList.add('visible');
-    return;
+  } else {
+    galleryEmpty.classList.remove('visible');
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.resourceType !== 'video') guestPhotoPool.push(data.url);
+      const item = document.createElement('div');
+      item.className = 'gallery-item reveal visible';
+      const media = data.resourceType === 'video'
+        ? '<video src="' + data.url + '" muted playsinline preload="metadata"></video>'
+        : '<img src="' + data.url + '" loading="lazy" alt="Foto de la boda" />';
+      item.innerHTML = media +
+        '<a class="gallery-download" href="' + attachmentUrl(data.url) + '" title="' + (T[lang]['download_label'] || 'Download') + '" download>⬇</a>';
+      item.addEventListener('click', () => openLightbox(data.url, data.resourceType));
+      item.querySelector('.gallery-download').addEventListener('click', e => e.stopPropagation());
+      gallery.appendChild(item);
+    });
   }
-  galleryEmpty.classList.remove('visible');
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    const item = document.createElement('div');
-    item.className = 'gallery-item reveal visible';
-    const media = data.resourceType === 'video'
-      ? '<video src="' + data.url + '" muted playsinline preload="metadata"></video>'
-      : '<img src="' + data.url + '" loading="lazy" alt="Foto de la boda" />';
-    item.innerHTML = media +
-      '<a class="gallery-download" href="' + attachmentUrl(data.url) + '" title="' + (T[lang]['download_label'] || 'Download') + '" download>⬇</a>';
-    gallery.appendChild(item);
-  });
+  if (guestPhotoPool.length >= 3 && guestTeaser) {
+    guestTeaser.classList.add('visible');
+    startGuestTeaser();
+  }
 }, err => {
   console.error('Firestore snapshot error:', err);
 });
